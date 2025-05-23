@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:17
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgress
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: mydb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: prisma+postgres://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiMDFKVlYwRlhTMVYyODRNVEEwUjZDS1ZESDciLCJ0ZW5hbnRfaWQiOiI1M2U2ZTYxNzBjZDBkNDkwMDNjODNiM2QyZjYyMmY1ZGIwYWVjMTRhZmViZTQ1MjJjYmYwZGEzMGE1MjZmMGMxIiwiaW50ZXJuYWxfc2VjcmV0IjoiYzNkZTMxNTEtZDdiNi00MzZkLWFhNGUtMTFiMTE0YmE5YTI0In0._TGvMBTuaQecwjOImZ5LoVYSpjMN_Re6OP8RH5A73H4
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: http://backend:3000/api
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
